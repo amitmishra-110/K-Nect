@@ -1,0 +1,43 @@
+ filePath.putFile(resultUri).addOnCompleteListener
+                        (new OnCompleteListener<UploadTask.TaskSnapshot>()
+                {
+                    @Override
+                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task)
+                    {
+                        if(task.isSuccessful())
+                        {
+                            Toast.makeText(SettingsActivity.this, "Profile image uploaded successfully", Toast.LENGTH_SHORT).show();
+
+                            final  String downloadUrl=task.getResult().getStorage().getDownloadUrl().toString();
+
+                            RootRef.child("Users").child(currentUserID).child("image")
+                                    .setValue(downloadUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task)
+                                {
+                                    if(task.isSuccessful())
+                                    {
+                                        Toast.makeText(SettingsActivity.this, "Image saved successfully", Toast.LENGTH_SHORT).show();
+                                        loadingBar.dismiss();
+                                    }
+                                    else
+                                    {
+                                        String message=task.getException().toString();
+                                        Toast.makeText(SettingsActivity.this, "Error:"+message, Toast.LENGTH_SHORT).show();
+                                        loadingBar.dismiss();
+
+                                    }
+                                }
+                            });
+                        }
+                        else
+                        {
+                            String message=task.getException().toString();
+                            Toast.makeText(SettingsActivity.this, "Error" +message, Toast.LENGTH_SHORT).show();
+                            loadingBar.dismiss();
+
+                        }
+
+                    }
+                });
+
